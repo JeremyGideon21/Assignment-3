@@ -1,0 +1,244 @@
+java
+Copy
+public class Course {
+    private String courseCode;
+    private String courseName;
+
+    // Constructor
+    public Course(String courseCode, String courseName) {
+        this.courseCode = courseCode;
+        this.courseName = courseName;
+    }
+
+    // Getters and Setters
+    public String getCourseCode() {
+        return courseCode;
+    }
+
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
+    @Override
+    public String toString() {
+        return courseCode + ": " + courseName;
+    }
+}
+Step 2: Define the Grade Class
+The Grade class will store the grade a student received for a specific course.
+
+java
+Copy
+public class Grade {
+    private Course course;
+    private String grade;  // A grade, such as "A", "B", etc.
+
+    // Constructor
+    public Grade(Course course, String grade) {
+        this.course = course;
+        this.grade = grade;
+    }
+
+    // Getters and Setters
+    public Course getCourse() {
+        return course;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
+    }
+
+    @Override
+    public String toString() {
+        return course + " - Grade: " + grade;
+    }
+}
+Step 3: Define the Student Class
+The Student class will store information about a student, including the student's ID, name, and their courses/grades.
+
+java
+Copy
+import java.util.ArrayList;
+
+public class Student {
+    private String studentId;
+    private String name;
+    private ArrayList<Grade> grades;  // List of grades assigned to the student
+
+    // Constructor
+    public Student(String studentId, String name) {
+        this.studentId = studentId;
+        this.name = name;
+        this.grades = new ArrayList<>();
+    }
+
+    // Getters and Setters
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ArrayList<Grade> getGrades() {
+        return grades;
+    }
+
+    public void addGrade(Grade grade) {
+        this.grades.add(grade);
+    }
+
+    // Calculate GPA (assuming grade points mapping: A = 4, B = 3, C = 2, D = 1, F = 0)
+    public double calculateGPA() {
+        double totalPoints = 0.0;
+        for (Grade grade : grades) {
+            switch (grade.getGrade()) {
+                case "A": totalPoints += 4.0; break;
+                case "B": totalPoints += 3.0; break;
+                case "C": totalPoints += 2.0; break;
+                case "D": totalPoints += 1.0; break;
+                case "F": totalPoints += 0.0; break;
+                default: break;  // Handle invalid grades
+            }
+        }
+        return grades.size() == 0 ? 0.0 : totalPoints / grades.size();
+    }
+
+    @Override
+    public String toString() {
+        return "Student ID: " + studentId + ", Name: " + name;
+    }
+}
+Step 4: Define the StudentGradeManagementSystem Class
+This class will manage the overall system, allowing us to add students, courses, assign grades, and calculate the GPA.
+
+java
+Copy
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class StudentGradeManagementSystem {
+
+    private ArrayList<Student> students;  // List to store students
+    private ArrayList<Course> courses;    // List to store courses
+
+    public StudentGradeManagementSystem() {
+        students = new ArrayList<>();
+        courses = new ArrayList<>();
+    }
+
+    // Method to add a course
+    public void addCourse(Course course) {
+        courses.add(course);
+    }
+
+    // Method to add a student
+    public void addStudent(Student student) {
+        students.add(student);
+    }
+
+    // Method to assign a grade to a student in a specific course
+    public void assignGrade(String studentId, String courseCode, String grade) {
+        Student student = findStudentById(studentId);
+        Course course = findCourseByCode(courseCode);
+
+        if (student != null && course != null) {
+            Grade gradeEntry = new Grade(course, grade);
+            student.addGrade(gradeEntry);
+        } else {
+            System.out.println("Invalid student ID or course code.");
+        }
+    }
+
+    // Method to find a student by ID
+    private Student findStudentById(String studentId) {
+        for (Student student : students) {
+            if (student.getStudentId().equals(studentId)) {
+                return student;
+            }
+        }
+        return null;
+    }
+
+    // Method to find a course by course code
+    private Course findCourseByCode(String courseCode) {
+        for (Course course : courses) {
+            if (course.getCourseCode().equals(courseCode)) {
+                return course;
+            }
+        }
+        return null;
+    }
+
+    // Method to display all students and their GPAs
+    public void displayStudentGPA() {
+        for (Student student : students) {
+            System.out.println(student);
+            System.out.println("GPA: " + student.calculateGPA());
+        }
+    }
+
+    // Method to display all courses
+    public void displayCourses() {
+        for (Course course : courses) {
+            System.out.println(course);
+        }
+    }
+
+    public static void main(String[] args) {
+        // Create a new system
+        StudentGradeManagementSystem system = new StudentGradeManagementSystem();
+
+        // Create some courses
+        Course math = new Course("MATH101", "Mathematics");
+        Course science = new Course("SCI101", "Science");
+
+        // Add courses to the system
+        system.addCourse(math);
+        system.addCourse(science);
+
+        // Create some students
+        Student student1 = new Student("S001", "John Doe");
+        Student student2 = new Student("S002", "Jane Smith");
+
+        // Add students to the system
+        system.addStudent(student1);
+        system.addStudent(student2);
+
+        // Assign grades to students
+        system.assignGrade("S001", "MATH101", "A");
+        system.assignGrade("S001", "SCI101", "B");
+        system.assignGrade("S002", "MATH101", "C");
+
+        // Display students and their GPAs
+        system.displayStudentGPA();
+
+        // Display all courses
+        system.displayCourses();
+    }
+}
