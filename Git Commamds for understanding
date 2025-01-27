@@ -1,0 +1,25 @@
+Git Commands Breakdown
+ ls: Lists files and directories in the current directory.
+ git status: Shows the current status of the git repository, including staged, unstaged, and untracked
+ files.
+ git log --online --decorate: Shows the commit history in a simplified format, with one commit per line
+ and branch names and tags.
+ git branch: Lists all branches in the repository and shows the currently checked-out branch.
+ cd wiproDemo: Changes the directory to wiproDemo.
+ git add .: Stages all the changes (new, modified, and deleted files) for the next commit.
+ git commit -m 'my first commit': Commits the staged changes with a commit message 'my first
+ commit'.
+ git remote -v: Displays the remote repositories associated with the local repository.
+ git push origin main: Pushes the local main branch to the remote origin repository.
+ git show ca0b2fb: Shows detailed information about the commit with ID ca0b2fb.
+ git log: Displays the commit history in full detail.
+ got log --online: This is a typo; should be git log --oneline.
+ clear: Clears the terminal screen.
+ git checkout -b mydevbranch: Creates a new branch named mydevbranch and checks it out.
+ git commit -m 'my second commit': Commits the staged changes with the message 'my second
+ commit'.
+ git merge mydevbranch: Merges the changes from the mydevbranch branch into the currently
+ checked-out branch (main in this case).
+ git push origin mydevbranch: Pushes the mydevbranch to the remote repository.
+ git push origin main: Pushes the main branch to the remote repository.
+ history: Shows the history of commands executed in the terminal.
