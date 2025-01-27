@@ -1,0 +1,236 @@
+public class Employee {
+    private String employeeId;
+    private String name;
+    private double baseSalary;
+
+    // Constructor
+    public Employee(String employeeId, String name, double baseSalary) {
+        this.employeeId = employeeId;
+        this.name = name;
+        this.baseSalary = baseSalary;
+    }
+
+    // Getters and Setters
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getBaseSalary() {
+        return baseSalary;
+    }
+
+    public void setBaseSalary(double baseSalary) {
+        this.baseSalary = baseSalary;
+    }
+
+    // Calculate basic salary (can be overridden by subclasses)
+    public double calculateSalary() {
+        return baseSalary;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee ID: " + employeeId + ", Name: " + name;
+    }
+}
+Step 2: Define the PermanentEmployee Class
+The PermanentEmployee class is a subclass of Employee. It includes methods to calculate salary, bonuses, and other perks specific to permanent employees.
+
+java
+Copy
+public class PermanentEmployee extends Employee {
+    private double bonus;
+    private double healthInsurance;
+
+    // Constructor
+    public PermanentEmployee(String employeeId, String name, double baseSalary, double bonus, double healthInsurance) {
+        super(employeeId, name, baseSalary);
+        this.bonus = bonus;
+        this.healthInsurance = healthInsurance;
+    }
+
+    // Getters and Setters
+    public double getBonus() {
+        return bonus;
+    }
+
+    public void setBonus(double bonus) {
+        this.bonus = bonus;
+    }
+
+    public double getHealthInsurance() {
+        return healthInsurance;
+    }
+
+    public void setHealthInsurance(double healthInsurance) {
+        this.healthInsurance = healthInsurance;
+    }
+
+    @Override
+    public double calculateSalary() {
+        return getBaseSalary() + bonus - healthInsurance;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", Type: Permanent";
+    }
+}
+Step 3: Define the ContractualEmployee Class
+The ContractualEmployee class is also a subclass of Employee. This class may have a different salary calculation method, such as paying hourly or by the contract.
+
+java
+Copy
+public class ContractualEmployee extends Employee {
+    private double hourlyRate;
+    private int hoursWorked;
+
+    // Constructor
+    public ContractualEmployee(String employeeId, String name, double hourlyRate, int hoursWorked) {
+        super(employeeId, name, 0);  // Base salary is 0 for contractual employees
+        this.hourlyRate = hourlyRate;
+        this.hoursWorked = hoursWorked;
+    }
+
+    // Getters and Setters
+    public double getHourlyRate() {
+        return hourlyRate;
+    }
+
+    public void setHourlyRate(double hourlyRate) {
+        this.hourlyRate = hourlyRate;
+    }
+
+    public int getHoursWorked() {
+        return hoursWorked;
+    }
+
+    public void setHoursWorked(int hoursWorked) {
+        this.hoursWorked = hoursWorked;
+    }
+
+    @Override
+    public double calculateSalary() {
+        return hourlyRate * hoursWorked;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", Type: Contractual";
+    }
+}
+Step 4: Define the Payroll Class
+The Payroll class handles the payroll operations like calculating salary, bonuses, and generating reports for employees.
+
+java
+Copy
+import java.util.ArrayList;
+
+public class Payroll {
+    private ArrayList<Employee> employees;  // List to store all employees
+
+    public Payroll() {
+        employees = new ArrayList<>();
+    }
+
+    // Method to add an employee
+    public void addEmployee(Employee employee) {
+        employees.add(employee);
+    }
+
+    // Method to calculate and display salary for all employees
+    public void calculateSalaries() {
+        for (Employee employee : employees) {
+            System.out.println(employee + ", Salary: " + employee.calculateSalary());
+        }
+    }
+
+    // Generate a report of all employees and their details
+    public void generateReport() {
+        System.out.println("Employee Payroll Report:");
+        for (Employee employee : employees) {
+            System.out.println(employee + ", Salary: " + employee.calculateSalary());
+        }
+    }
+}
+Step 5: Define the Department Class
+The Department class will represent an organizational department that contains employees. You can have different departments such as HR, IT, Sales, etc.
+
+java
+Copy
+import java.util.ArrayList;
+
+public class Department {
+    private String departmentName;
+    private ArrayList<Employee> employees;
+
+    // Constructor
+    public Department(String departmentName) {
+        this.departmentName = departmentName;
+        this.employees = new ArrayList<>();
+    }
+
+    // Add employee to the department
+    public void addEmployee(Employee employee) {
+        employees.add(employee);
+    }
+
+    // Generate a payroll report for all employees in the department
+    public void generateDepartmentReport() {
+        System.out.println("Department: " + departmentName);
+        for (Employee employee : employees) {
+            System.out.println(employee + ", Salary: " + employee.calculateSalary());
+        }
+    }
+}
+Step 6: Main Class (Test the System)
+Finally, the Main class (or another appropriate class) will instantiate the objects, create employees, assign them to departments, and generate payroll reports.
+
+java
+Copy
+public class EmployeePayrollSystem {
+    public static void main(String[] args) {
+        // Create Permanent Employees
+        PermanentEmployee permEmployee1 = new PermanentEmployee("P001", "Alice", 5000, 1000, 200);
+        PermanentEmployee permEmployee2 = new PermanentEmployee("P002", "Bob", 4500, 800, 150);
+
+        // Create Contractual Employees
+        ContractualEmployee contractEmployee1 = new ContractualEmployee("C001", "Charlie", 20, 160);
+        ContractualEmployee contractEmployee2 = new ContractualEmployee("C002", "David", 18, 140);
+
+        // Create Payroll System and add employees
+        Payroll payroll = new Payroll();
+        payroll.addEmployee(permEmployee1);
+        payroll.addEmployee(permEmployee2);
+        payroll.addEmployee(contractEmployee1);
+        payroll.addEmployee(contractEmployee2);
+
+        // Create Departments and add employees
+        Department hrDepartment = new Department("HR");
+        hrDepartment.addEmployee(permEmployee1);
+        hrDepartment.addEmployee(contractEmployee1);
+
+        Department itDepartment = new Department("IT");
+        itDepartment.addEmployee(permEmployee2);
+        itDepartment.addEmployee(contractEmployee2);
+
+        // Display payroll and department reports
+        payroll.generateReport();
+        System.out.println("\nHR Department Report:");
+        hrDepartment.generateDepartmentReport();
+        System.out.println("\nIT Department Report:");
+        itDepartment.generateDepartmentReport();
+    }
+}
