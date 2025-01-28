@@ -1,0 +1,110 @@
+import java.util.*;
+import java.util.stream.Collectors;
+
+class Employee {
+    String name;
+    int salary;
+    String department;
+
+    public Employee(String name, int salary, String department) {
+        this.name = name;
+        this.salary = salary;
+        this.department = department;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "name='" + name + '\'' +
+                ", salary=" + salary +
+                ", department='" + department + '\'' +
+                '}';
+    }
+}
+
+public class EmployeeAnalysis {
+    public static void main(String[] args) {
+        List<Employee> employees = Arrays.asList(
+                new Employee("Alice", 7000, "HR"),
+                new Employee("Bob", 6000, "Finance"),
+                new Employee("Charlie", 8000, "IT"),
+                new Employee("David", 4000, "Marketing"),
+                new Employee("Eve", 9000, "IT"),
+                new Employee("Frank", 3000, "HR")
+        );
+
+        // 1. Find Employee with Highest Salary
+        Employee highestPaid = employees.stream()
+                .max(Comparator.comparingInt(emp -> emp.salary))
+                .orElse(null);
+        System.out.println("Employee with Highest Salary: " + highestPaid);
+
+        // 2. Filter Employees with Salary Greater Than 5000
+        List<Employee> highSalaryEmployees = employees.stream()
+                .filter(emp -> emp.salary > 5000)
+                .collect(Collectors.toList());
+        System.out.println("Employees with Salary > 5000: " + highSalaryEmployees);
+
+        // 3. Get Employee Names and Salaries
+        List<String> employeeNamesSalaries = employees.stream()
+                .map(emp -> emp.name + ": " + emp.salary)
+                .collect(Collectors.toList());
+        System.out.println("Employee Names and Salaries: " + employeeNamesSalaries);
+
+        // 4. Count Employees
+        long employeeCount = employees.size();
+        System.out.println("Total Number of Employees: " + employeeCount);
+
+        // 5. Group Employees by Department
+        Map<String, List<Employee>> groupedByDepartment = employees.stream()
+                .collect(Collectors.groupingBy(emp -> emp.department));
+        System.out.println("Employees Grouped by Department: " + groupedByDepartment);
+
+        // 6. Calculate Average Salary
+        double averageSalary = employees.stream()
+                .mapToInt(emp -> emp.salary)
+                .average()
+                .orElse(0.0);
+        System.out.println("Average Salary: " + averageSalary);
+
+        // 7. Sort Employees by Salary
+        List<Employee> sortedBySalary = employees.stream()
+                .sorted(Comparator.comparingInt(emp -> -emp.salary))
+                .collect(Collectors.toList());
+        System.out.println("Employees Sorted by Salary: " + sortedBySalary);
+
+        // 8. Find Employee with Second Highest Salary
+        Employee secondHighestPaid = sortedBySalary.size() > 1 ? sortedBySalary.get(1) : null;
+        System.out.println("Employee with Second Highest Salary: " + secondHighestPaid);
+
+        // 9. Partition Employees by Salary Threshold
+        int threshold = 5000;
+        Map<Boolean, List<Employee>> partitionedBySalary = employees.stream()
+                .collect(Collectors.partitioningBy(emp -> emp.salary > threshold));
+        System.out.println("Partitioned Employees: " + partitionedBySalary);
+
+        // 10. Find Employee with Longest Name
+        Employee longestNameEmployee = employees.stream()
+                .max(Comparator.comparingInt(emp -> emp.name.length()))
+                .orElse(null);
+        System.out.println("Employee with Longest Name: " + longestNameEmployee);
+
+        // 11. Group Employees by Department and Calculate Average Salary
+        Map<String, Double> avgSalaryByDept = employees.stream()
+                .collect(Collectors.groupingBy(emp -> emp.department,
+                        Collectors.averagingInt(emp -> emp.salary)));
+        System.out.println("Average Salary by Department: " + avgSalaryByDept);
+
+        // 12. Find Top 3 Highest Paid Employees
+        List<Employee> top3Employees = sortedBySalary.stream()
+                .limit(3)
+                .collect(Collectors.toList());
+        System.out.println("Top 3 Highest Paid Employees: " + top3Employees);
+
+        // 13. Calculate Total Salary of All Employees Using Reduce
+        int totalSalary = employees.stream()
+                .map(emp -> emp.salary)
+                .reduce(0, Integer::sum);
+        System.out.println("Total Salary of All Employees: " + totalSalary);
+    }
+}
