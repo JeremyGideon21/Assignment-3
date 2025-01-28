@@ -1,0 +1,24 @@
+package com.v2.java8featuresExampleOne;
+ 
+import java.util.Arrays;
+import java.util.List;
+ 
+public class Main {
+ 
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+ 
+		List<EmployeeC> employees = Arrays.asList(
+				new EmployeeC("swetha",25000),
+				new EmployeeC("Swapna",35000),
+				new EmployeeC("madhura",30000),
+				new EmployeeC("brycki",27000)
+ 
+		);
+		employees.stream()
+		.filter(s->s.salary > 25000)
+		.map(s->s.name.toUpperCase())
+		.forEach(System.out::println);
+	}
+ 
+}
