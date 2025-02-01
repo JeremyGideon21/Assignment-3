@@ -1,0 +1,133 @@
+import java.util.*;
+
+public class VehicleRentalSystem {
+    abstract static class Vehicle {
+        private String vehicleId;
+        private String name;
+        private double rentalPricePerDay; // Rental price per day
+        public Vehicle(String vehicleId, String name, double rentalPricePerDay) {
+            this.vehicleId = vehicleId;
+            this.name = name;
+            this.rentalPricePerDay = rentalPricePerDay;
+        }
+        public String getVehicleId() {
+            return vehicleId;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getRentalPricePerDay() {
+            return rentalPricePerDay;
+        }
+        public abstract void showDetails();
+        public double calculateRentalCost(int days) {
+            return rentalPricePerDay * days;
+        }
+    }
+    static class Car extends Vehicle {
+        private String carType; // E.g., Sedan, SUV
+        public Car(String vehicleId, String name, double rentalPricePerDay, String carType) {
+            super(vehicleId, name, rentalPricePerDay);
+            this.carType = carType;
+        }
+        public void showDetails() {
+            System.out.println("Vehicle Type: Car");
+            System.out.println("Car Type: " + carType);
+            System.out.println("Vehicle ID: " + getVehicleId());
+            System.out.println("Vehicle Name: " + getName());
+            System.out.println("Rental Price Per Day: $" + getRentalPricePerDay());
+        }
+    }
+    static class Bike extends Vehicle {
+        private String bikeType; // E.g., Mountain, Road Bike
+        public Bike(String vehicleId, String name, double rentalPricePerDay, String bikeType) {
+            super(vehicleId, name, rentalPricePerDay);
+            this.bikeType = bikeType;
+        }
+
+        public void showDetails() {
+            System.out.println("Vehicle Type: Bike");
+            System.out.println("Bike Type: " + bikeType);
+            System.out.println("Vehicle ID: " + getVehicleId());
+            System.out.println("Vehicle Name: " + getName());
+            System.out.println("Rental Price Per Day: $" + getRentalPricePerDay());
+        }
+    }
+
+    static class Customer {
+        private String customerId;
+        private String name;
+
+        public Customer(String customerId, String name) {
+            this.customerId = customerId;
+            this.name = name;
+        }
+
+        // Getters
+        public String getCustomerId() {
+            return customerId;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    static class Rental {
+        private Customer customer;
+        private Vehicle vehicle;
+        private int rentalDays;
+        public Rental(Customer customer, Vehicle vehicle, int rentalDays) {
+            this.customer = customer;
+            this.vehicle = vehicle;
+            this.rentalDays = rentalDays;
+        }
+        public void processRental() {
+            double totalCost = vehicle.calculateRentalCost(rentalDays);
+            System.out.println("\nRental Summary");
+            System.out.println("Customer: " + customer.getName());
+            System.out.println("Vehicle Rented: " + vehicle.getName());
+            System.out.println("Rental Days: " + rentalDays);
+            System.out.println("Total Rental Cost: $" + totalCost);
+        }
+        public void returnVehicle() {
+            System.out.println("Vehicle returned: " + vehicle.getName());
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Vehicle car1 = new Car("V001", "Toyota Corolla", 50.0, "Sedan");
+        Vehicle bike1 = new Bike("V002", "Yamaha FZ", 20.0, "Sports");
+        System.out.print("Enter your name: ");
+        String customerName = scanner.nextLine();
+        System.out.print("Enter your customer ID: ");
+        String customerId = scanner.nextLine();
+        Customer customer = new Customer(customerId, customerName);
+        System.out.println("\nAvailable Vehicles:");
+        car1.showDetails();
+        bike1.showDetails();
+
+        System.out.print("\nWhich vehicle would you like to rent? (Enter Vehicle ID): ");
+        String vehicleId = scanner.nextLine();
+        System.out.print("Enter rental days: ");
+        int rentalDays = scanner.nextInt();
+
+        Vehicle rentedVehicle = null;
+        if (vehicleId.equals(car1.getVehicleId())) {
+            rentedVehicle = car1;
+        } else if (vehicleId.equals(bike1.getVehicleId())) {
+            rentedVehicle = bike1;
+        } else {
+            System.out.println("Invalid vehicle ID.");
+            return;
+        }
+
+        Rental rental = new Rental(customer, rentedVehicle, rentalDays);
+        rental.processRental();
+        System.out.println("\nReturning the vehicle...");
+        rental.returnVehicle();
+    }
+}
