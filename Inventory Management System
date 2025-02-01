@@ -1,0 +1,113 @@
+class Product {
+    private String productId;
+    private String name;
+    private double price;
+    private int stockQuantity;
+
+    public Product(String productId, String name, double price, int stockQuantity) {
+        this.productId = productId;
+        this.name = name;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+    }
+    public String getProductId() {
+        return productId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public int getStockQuantity() {
+        return stockQuantity;
+    }
+
+    public void setStockQuantity(int stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+
+    public String toString() {
+        return "Product ID: " + productId + ", Name: " + name + ", Price: " + price + ", Stock: " + stockQuantity;
+    }
+}
+interface Supplier {
+    void addProduct(Product product);  // Add product to inventory
+    void removeProduct(String productId);  // Remove product from inventory
+    void updateStock(String productId, int quantity);  // Update stock level for a product
+}
+import java.util.*;
+
+class Inventory implements Supplier {
+    private Map<String, Product> productCatalog;  // Map to store products with their productId
+    public Inventory() {
+        productCatalog = new HashMap<>();
+    }
+    public void addProduct(Product product) {
+        productCatalog.put(product.getProductId(), product);
+        System.out.println("Product added: " + product);
+    }
+    @Override
+    public void removeProduct(String productId) {
+        if (productCatalog.containsKey(productId)) {
+            Product removedProduct = productCatalog.remove(productId);
+            System.out.println("Product removed: " + removedProduct);
+        } else {
+            System.out.println("Product with ID " + productId + " not found.");
+        }
+    }
+    public void updateStock(String productId, int quantity) {
+        Product product = productCatalog.get(productId);
+        if (product != null) {
+            product.setStockQuantity(quantity);
+            System.out.println("Stock updated: " + product);
+        } else {
+            System.out.println("Product with ID " + productId + " not found.");
+        }
+    }
+    public void checkLowStock(int threshold) {
+        System.out.println("\nLow stock products (below threshold of " + threshold + "):");
+        for (Product product : productCatalog.values()) {
+            if (product.getStockQuantity() <= threshold) {
+                System.out.println(product);
+            }
+        }
+    }
+    public void displayInventory() {
+        if (productCatalog.isEmpty()) {
+            System.out.println("No products in inventory.");
+        } else {
+            for (Product product : productCatalog.values()) {
+                System.out.println(product);
+            }
+        }
+    }
+}
+public class InventoryManagementSystem {
+    public static void main(String[] args) {
+
+        Inventory inventory = new Inventory();
+
+        Product product1 = new Product("P001", "Laptop", 800.0, 50);
+        Product product2 = new Product("P002", "Smartphone", 600.0, 30);
+        Product product3 = new Product("P003", "Tablet", 400.0, 5); // Low stock product
+
+        inventory.addProduct(product1);
+        inventory.addProduct(product2);
+        inventory.addProduct(product3);
+
+        System.out.println("\nInventory:");
+        inventory.displayInventory();
+        inventory.updateStock("P002", 25);
+
+        inventory.removeProduct("P003");
+
+        System.out.println("\nUpdated Inventory:");
+       inventory.displayInventory();
+
+        inventory.checkLowStock(10);
+    }
+}
