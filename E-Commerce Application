@@ -1,0 +1,168 @@
+class Product {
+    private String productId;
+    private String name;
+    private double price;
+    private int stockQuantity;
+    public Product(String productId, String name, double price, int stockQuantity) {
+        this.productId = productId;
+        this.name = name;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+    }
+    public String getProductId() {
+        return productId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public int getStockQuantity() {
+        return stockQuantity;
+    }
+
+    public void setStockQuantity(int stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+    public String toString() {
+        return "Product ID: " + productId + ", Name: " + name + ", Price: " + price + ", Stock: " + stockQuantity;
+    }
+}
+import java.util.ArrayList;
+import java.util.List;
+
+class Order {
+    private String orderId;
+    private Customer customer;
+    private List<Product> products;
+    private List<Integer> quantities;
+    private double totalCost;
+    public Order(String orderId, Customer customer) {
+        this.orderId = orderId;
+        this.customer = customer;
+        this.products = new ArrayList<>();
+        this.quantities = new ArrayList<>();
+        this.totalCost = 0;
+    }
+    public void addProduct(Product product, int quantity) {
+        if (product.getStockQuantity() >= quantity) {
+            products.add(product);
+            quantities.add(quantity);
+            totalCost += product.getPrice() * quantity;
+            product.setStockQuantity(product.getStockQuantity() - quantity); // Deduct stock
+            System.out.println("Added " + quantity + " of " + product.getName() + " to the order.");
+        } else {
+            System.out.println("Not enough stock for " + product.getName());
+        }
+    }
+    public double calculateTotalCost() {
+        return totalCost;
+    }
+    public void displayOrderDetails() {
+        System.out.println("Order ID: " + orderId);
+        System.out.println("Customer: " + customer.getName());
+        for (int i = 0; i < products.size(); i++) {
+            System.out.println(products.get(i).getName() + " x " + quantities.get(i) + " = " + (products.get(i).getPrice() * quantities.get(i)));
+        }
+        System.out.println("Total Cost: " + totalCost);
+    }
+    public String getOrderId() {
+        return orderId;
+    }
+}
+class Customer {
+    private String customerId;
+    private String name;
+    public Customer(String customerId, String name) {
+        this.customerId = customerId;
+        this.name = name;
+    }
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+import java.io.*;
+import java.util.*;
+
+class ECommerceSystem {
+    private Map<String, Product> productCatalog; // Product ID -> Product
+    private List<Order> orderHistory; // List of orders
+    public ECommerceSystem() {
+        productCatalog = new HashMap<>();
+        orderHistory = new ArrayList<>();
+    }
+    public void addProduct(Product product) {
+        productCatalog.put(product.getProductId(), product);
+        System.out.println("Product added: " + product.getName());
+    }
+    public void removeProduct(String productId) {
+        if (productCatalog.containsKey(productId)) {
+            productCatalog.remove(productId);
+            System.out.println("Product removed with ID: " + productId);
+        } else {
+            System.out.println("Product with ID " + productId + " not found.");
+        }
+    }
+
+    public void createOrder(Order order) {
+        orderHistory.add(order);
+        System.out.println("Order created with ID: " + order.getOrderId());
+    }
+    public void displayProducts() {
+        for (Product product : productCatalog.values()) {
+            System.out.println(product);
+        }
+    }
+
+    public void saveOrderHistory() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("order_history.txt"))) {
+            for (Order order : orderHistory) {
+                writer.write("Order ID: " + order.getOrderId() + "\n");
+                writer.write("Customer: " + order.customer.getName() + "\n");
+                for (int i = 0; i < order.products.size(); i++) {
+                    writer.write(order.products.get(i).getName() + " x " + order.quantities.get(i) + "\n");
+                }
+                writer.write("Total Cost: " + order.calculateTotalCost() + "\n\n");
+            }
+            System.out.println("Order history saved to file.");
+        } catch (IOException e) {
+            System.out.println("Error saving order history: " + e.getMessage());
+        }
+    }
+}
+public class ECommerceApplication {
+    public static void main(String[] args) {
+        Product product1 = new Product("P001", "Laptop", 800.0, 10);
+        Product product2 = new Product("P002", "Smartphone", 500.0, 20);
+        Product product3 = new Product("P003", "Headphones", 100.0, 50);
+        ECommerceSystem ecommerceSystem = new ECommerceSystem();
+
+        ecommerceSystem.addProduct(product1);
+        ecommerceSystem.addProduct(product2);
+        ecommerceSystem.addProduct(product3);
+
+        Customer customer = new Customer("C001", "John Doe");
+        Order order = new Order("O001", customer);
+        order.addProduct(product1, 2);
+        order.addProduct(product2, 1);
+
+        ecommerceSystem.createOrder(order);
+
+        order.displayOrderDetails();
+
+        ecommerceSystem.saveOrderHistory();
+
+        System.out.println("\nProduct Catalog:");
+        ecommerceSystem.displayProducts();
+
+        ecommerceSystem.removeProduct("P003");
+    }
+}
