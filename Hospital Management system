@@ -1,0 +1,203 @@
+import java.util.*;
+class Patient {
+    private String patientId;
+    private String name;
+    private int age;
+    private String medicalHistory;
+
+    public Patient(String patientId, String name, int age, String medicalHistory) {
+        this.patientId = patientId;
+        this.name = name;
+        this.age = age;
+        this.medicalHistory = medicalHistory;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public String getMedicalHistory() {
+        return medicalHistory;
+    }
+
+    public String toString() {
+        return "Patient ID: " + patientId + ", Name: " + name + ", Age: " + age + ", Medical History: " + medicalHistory;
+    }
+}
+class Doctor {
+    private String doctorId;
+    private String name;
+    private String specialty;
+    private boolean isAvailable;
+
+    public Doctor(String doctorId, String name, String specialty, boolean isAvailable) {
+        this.doctorId = doctorId;
+        this.name = name;
+        this.specialty = specialty;
+        this.isAvailable = isAvailable;
+    }
+
+    public String getDoctorId() {
+        return doctorId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSpecialty() {
+        return specialty;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailability(boolean isAvailable) {
+        this.isAvailable = isAvailable;
+    }
+    public String toString() {
+        return "Doctor ID: " + doctorId + ", Name: " + name + ", Specialty: " + specialty + ", Available: " + (isAvailable ? "Yes" : "No");
+    }
+}
+import java.util.Date;
+
+class Appointment {
+    private Patient patient;
+    private Doctor doctor;
+    private Date appointmentTime;
+
+    public Appointment(Patient patient, Doctor doctor, Date appointmentTime) {
+        this.patient = patient;
+        this.doctor = doctor;
+        this.appointmentTime = appointmentTime;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    public Date getAppointmentTime() {
+        return appointmentTime;
+    }
+
+    public String toString() {
+        return "Appointment for " + patient.getName() + " with Dr. " + doctor.getName() + " at " + appointmentTime;
+    }
+}
+class HospitalManagementSystem {
+    private Map<String, Patient> patients;
+    private Map<String, Doctor> doctors;
+    private List<Appointment> appointments;
+    public HospitalManagementSystem() {
+        patients = new HashMap<>();
+        doctors = new HashMap<>();
+        appointments = new ArrayList<>();
+    }
+    public void addPatient(Patient patient) {
+        patients.put(patient.getPatientId(), patient);
+        System.out.println("Patient added: " + patient.getName());
+    }
+
+    public void addDoctor(Doctor doctor) {
+        doctors.put(doctor.getDoctorId(), doctor);
+        System.out.println("Doctor added: " + doctor.getName());
+    }
+    public void scheduleAppointment(String patientId, String doctorId, Date appointmentTime) throws Exception {
+        Patient patient = patients.get(patientId);
+        Doctor doctor = doctors.get(doctorId);
+
+        if (patient == null) {
+            throw new Exception("Patient with ID " + patientId + " not found.");
+        }
+        if (doctor == null) {
+            throw new Exception("Doctor with ID " + doctorId + " not found.");
+        }
+        if (!doctor.isAvailable()) {
+            throw new Exception("Doctor " + doctor.getName() + " is not available.");
+        }
+
+        Appointment appointment = new Appointment(patient, doctor, appointmentTime);
+        appointments.add(appointment);
+        doctor.setAvailability(false); // Mark the doctor as unavailable after scheduling
+        System.out.println("Appointment scheduled: " + appointment);
+    }
+    public void viewAppointments() {
+        if (appointments.isEmpty()) {
+            System.out.println("No appointments scheduled.");
+            return;
+        }
+
+        for (Appointment appointment : appointments) {
+            System.out.println(appointment);
+        }
+    }
+    public void cancelAppointment(String patientId, String doctorId) throws Exception {
+        Appointment appointmentToCancel = null;
+        for (Appointment appointment : appointments) {
+            if (appointment.getPatient().getPatientId().equals(patientId) && appointment.getDoctor().getDoctorId().equals(doctorId)) {
+                appointmentToCancel = appointment;
+                break;
+            }
+        }
+
+        if (appointmentToCancel != null) {
+            appointments.remove(appointmentToCancel);
+            Doctor doctor = appointmentToCancel.getDoctor();
+            doctor.setAvailability(true); // Mark the doctor as available again
+            System.out.println("Appointment canceled: " + appointmentToCancel);
+        } else {
+            throw new Exception("No appointment found for the given patient and doctor.");
+        }
+    }
+}
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class HospitalApplication {
+    public static void main(String[] args) {
+        try {
+            HospitalManagementSystem hospitalSystem = new HospitalManagementSystem();
+
+            Patient patient1 = new Patient("P001", "John Doe", 30, "No allergies");
+            Patient patient2 = new Patient("P002", "Jane Smith", 25, "Asthma");
+            hospitalSystem.addPatient(patient1);
+            hospitalSystem.addPatient(patient2);
+
+            Doctor doctor1 = new Doctor("D001", "Dr. Adams", "Cardiologist", true);
+            Doctor doctor2 = new Doctor("D002", "Dr. Brown", "Dermatologist", true);
+            hospitalSystem.addDoctor(doctor1);
+            hospitalSystem.addDoctor(doctor2);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            Date appointmentTime1 = sdf.parse("2025-02-01 10:00");
+            hospitalSystem.scheduleAppointment("P001", "D001", appointmentTime1);
+
+            Date appointmentTime2 = sdf.parse("2025-02-01 11:00");
+            hospitalSystem.scheduleAppointment("P002", "D002", appointmentTime2);
+
+            hospitalSystem.viewAppointments();
+
+            hospitalSystem.scheduleAppointment("P002", "D001", sdf.parse("2025-02-01 12:00"));
+
+            hospitalSystem.cancelAppointment("P001", "D001");
+
+            hospitalSystem.viewAppointments();
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}
