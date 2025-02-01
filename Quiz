@@ -1,0 +1,146 @@
+import java.util.*;
+
+class Question {
+    private String questionText;
+    private List<String> options;
+    private int correctAnswerIndex;  // Index of the correct answer in options list
+    public Question(String questionText, List<String> options, int correctAnswerIndex) {
+        this.questionText = questionText;
+        this.options = options;
+        this.correctAnswerIndex = correctAnswerIndex;
+    }
+
+    public String getQuestionText() {
+        return questionText;
+    }
+
+    public List<String> getOptions() {
+        return options;
+    }
+
+    public int getCorrectAnswerIndex() {
+        return correctAnswerIndex;
+    }
+
+    public boolean isCorrect(int answerIndex) {
+        return answerIndex == correctAnswerIndex;
+    }
+
+    public String toString() {
+        return questionText + "\n" + "Options: " + options;
+    }
+}
+
+class User {
+    private String name;
+    private Map<Question, Integer> answers; // Stores the question and the answer chosen by the user
+
+    public User(String name) {
+        this.name = name;
+        this.answers = new HashMap<>();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Map<Question, Integer> getAnswers() {
+        return answers;
+    }
+
+    public void answerQuestion(Question question, int answerIndex) {
+        answers.put(question, answerIndex);
+    }
+}
+
+class Quiz {
+    private List<Question> questions; // List of questions in the quiz
+    private User user;
+
+    public Quiz(User user) {
+        this.questions = new ArrayList<>();
+        this.user = user;
+    }
+
+    public void addQuestion(Question question) {
+        questions.add(question);
+    }
+
+    public void takeQuiz() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Welcome, " + user.getName() + "! Let's start the quiz.\n");
+
+        for (int i = 0; i < questions.size(); i++) {
+            Question question = questions.get(i);
+            System.out.println("Q" + (i + 1) + ": " + question.getQuestionText());
+            List<String> options = question.getOptions();
+
+            for (int j = 0; j < options.size(); j++) {
+                System.out.println((j + 1) + ". " + options.get(j));
+            }
+
+
+            System.out.print("Your answer (enter the option number): ");
+            int answer = scanner.nextInt();
+
+
+            while (answer < 1 || answer > options.size()) {
+                System.out.print("Invalid option. Please enter a number between 1 and " + options.size() + ": ");
+                answer = scanner.nextInt();
+            }
+
+            user.answerQuestion(question, answer - 1);  // Store the answer as 0-indexed
+        }
+    }
+
+    public int calculateScore() {
+        int score = 0;
+
+        for (Map.Entry<Question, Integer> entry : user.getAnswers().entrySet()) {
+            Question question = entry.getKey();
+            int userAnswerIndex = entry.getValue();
+
+            if (question.isCorrect(userAnswerIndex)) {
+                score++;
+            }
+        }
+
+        return score;
+    }
+
+    public void displayResults() {
+        int score = calculateScore();
+        int totalQuestions = questions.size();
+
+        System.out.println("\nQuiz completed!");
+        System.out.println("Your score: " + score + " out of " + totalQuestions);
+    }
+}
+
+public class OnlineQuizSystem {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        List<String> options1 = Arrays.asList("Paris", "London", "Berlin", "Madrid");
+        Question question1 = new Question("What is the capital of France?", options1, 0);
+
+        List<String> options2 = Arrays.asList("Java", "C", "Python", "Ruby");
+        Question question2 = new Question("Which programming language is this quiz written in?", options2, 0);
+
+        List<String> options3 = Arrays.asList("2", "4", "6", "8");
+        Question question3 = new Question("What is 2 + 2?", options3, 1);
+
+        System.out.print("Enter your name: ");
+        String userName = scanner.nextLine();
+        User user = new User(userName);
+
+        Quiz quiz = new Quiz(user);
+        quiz.addQuestion(question1);
+        quiz.addQuestion(question2);
+        quiz.addQuestion(question3);
+
+        quiz.takeQuiz();
+
+        quiz.displayResults();
+    }
+}
